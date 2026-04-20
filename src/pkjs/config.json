@@ -1,0 +1,42 @@
+[
+  {
+    "type": "heading",
+    "defaultValue": "Station Clock Settings"
+  },
+  {
+    "type": "section",
+    "items": [
+      {
+        "type": "toggle",
+        "messageKey": "TEMP_UNIT_IS_F",
+        "label": "Use Fahrenheit",
+        "description": "Off = Celsius",
+        "defaultValue": true
+      },
+      {
+        "type": "toggle",
+        "messageKey": "DIST_UNIT_IS_MI",
+        "label": "Use Miles",
+        "description": "Off = Kilometers",
+        "defaultValue": true
+      },
+      {
+        "type": "input",
+        "messageKey": "HEALTH_DISPLAY_TIMEOUT",
+        "label": "Tracking Timeout",
+        "description": "Seconds before returning to main screen (blank/0 disables)",
+        "defaultValue": "",
+        "attributes": {
+          "type": "number",
+          "min": "0",
+          "max": "300",
+          "placeholder": "e.g. 15"
+        }
+      }
+    ]
+  },
+  {
+    "type": "submit",
+    "defaultValue": "Save"
+  }
+]
