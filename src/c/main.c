@@ -722,19 +722,6 @@ static void window_unload(Window *win) {
 }
 
 static void init(void) {
-    s_window = window_create();
-    window_set_background_color(s_window, GColorBlack);
-    window_set_window_handlers(s_window, (WindowHandlers){
-        .load = window_load,
-        .unload = window_unload,
-    });
-    window_stack_push(s_window, true);
-
-    tick_timer_service_subscribe(MINUTE_UNIT, tick_handler);
-    accel_tap_service_subscribe(tap_handler);
-    battery_state_service_subscribe(battery_handler);
-    s_battery_level = battery_state_service_peek().charge_percent;
-
     s_tracking_display_timeout = persist_exists(MESSAGE_KEY_HEALTH_DISPLAY_TIMEOUT)
         ? clamp_timeout_seconds(persist_read_int(MESSAGE_KEY_HEALTH_DISPLAY_TIMEOUT))
         : 0;
@@ -747,6 +734,19 @@ static void init(void) {
     s_show_battery = persist_exists(MESSAGE_KEY_SHOW_BATTERY)
         ? persist_read_int(MESSAGE_KEY_SHOW_BATTERY) != 0
         : false;
+
+    s_window = window_create();
+    window_set_background_color(s_window, GColorBlack);
+    window_set_window_handlers(s_window, (WindowHandlers){
+        .load = window_load,
+        .unload = window_unload,
+    });
+    window_stack_push(s_window, true);
+
+    tick_timer_service_subscribe(MINUTE_UNIT, tick_handler);
+    accel_tap_service_subscribe(tap_handler);
+    battery_state_service_subscribe(battery_handler);
+    s_battery_level = battery_state_service_peek().charge_percent;
 
     app_message_register_inbox_received(inbox_received);
     app_message_register_inbox_dropped(inbox_dropped);
