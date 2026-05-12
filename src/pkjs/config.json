@@ -21,6 +21,13 @@
         "defaultValue": true
       },
       {
+        "type": "toggle",
+        "messageKey": "SHOW_BATTERY",
+        "label": "Show Battery",
+        "description": "Show a thin colored line along the top of the screen indicating battery level",
+        "defaultValue": false
+      },
+      {
         "type": "input",
         "messageKey": "HEALTH_DISPLAY_TIMEOUT",
         "label": "Tracking Timeout",

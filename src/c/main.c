@@ -120,6 +120,8 @@ static AppTimer *s_tracking_view_timer = NULL;
 static time_t s_last_tap_time = 0;
 static bool s_use_fahrenheit = true;
 static bool s_use_miles = true;
+static bool s_show_battery = false;
+static uint8_t s_battery_level = 0;
 
 // Text-rendering layers
 static Layer *s_time_layer;
@@ -130,6 +132,9 @@ static Layer *s_steps_layer;
 static Layer *s_dist_layer;
 static Layer *s_am_layer;
 static Layer *s_cals_layer;
+
+// Battery indicator
+static Layer *s_battery_layer;
 
 // Weather + tracking icons
 static BitmapLayer *s_weather_icon_layer;
@@ -212,6 +217,29 @@ static void update_weather_icon(void) {
     if (s_weather_bitmap) gbitmap_destroy(s_weather_bitmap);
     s_weather_bitmap = gbitmap_create_with_resource(resolve_weather_resource(s_weather_code, s_is_day));
     bitmap_layer_set_bitmap(s_weather_icon_layer, s_weather_bitmap);
+}
+
+// ----- Battery indicator -----
+
+#define BATTERY_LINE_HEIGHT 3
+
+static void battery_update_proc(Layer *layer, GContext *ctx) {
+    GRect b = layer_get_bounds(layer);
+    int bar_w = (s_battery_level * b.size.w) / 100;
+
+    GColor color;
+    if (s_battery_level > 75) color = GColorGreen;
+    else if (s_battery_level > 50) color = GColorYellow;
+    else if (s_battery_level > 25) color = GColorOrange;
+    else color = GColorRed;
+
+    graphics_context_set_fill_color(ctx, color);
+    graphics_fill_rect(ctx, GRect(0, 0, bar_w, b.size.h), 0, GCornerNone);
+}
+
+static void battery_handler(BatteryChargeState charge) {
+    s_battery_level = charge.charge_percent;
+    if (s_battery_layer) layer_mark_dirty(s_battery_layer);
 }
 
 // ----- Time / date update -----
@@ -429,6 +457,7 @@ static void inbox_received(DictionaryIterator *iter, void *ctx) {
     Tuple *t_timeout = dict_find(iter, MESSAGE_KEY_HEALTH_DISPLAY_TIMEOUT);
     Tuple *t_temp_unit = dict_find(iter, MESSAGE_KEY_TEMP_UNIT_IS_F);
     Tuple *t_dist_unit = dict_find(iter, MESSAGE_KEY_DIST_UNIT_IS_MI);
+    Tuple *t_show_batt = dict_find(iter, MESSAGE_KEY_SHOW_BATTERY);
 
     bool weather_changed = false;
     if (t_temp) s_temperature = (int)t_temp->value->int32;
@@ -457,6 +486,15 @@ static void inbox_received(DictionaryIterator *iter, void *ctx) {
             schedule_tracking_timer();
         } else {
             cancel_tracking_timer();
+        }
+    }
+
+    if (t_show_batt) {
+        s_show_battery = parse_bool_tuple(t_show_batt, false);
+        persist_write_int(MESSAGE_KEY_SHOW_BATTERY, s_show_battery ? 1 : 0);
+        if (s_battery_layer) {
+            layer_set_hidden(s_battery_layer, !s_show_battery);
+            if (s_show_battery) layer_mark_dirty(s_battery_layer);
         }
     }
 
@@ -641,6 +679,12 @@ static void window_load(Window *win) {
     layer_add_child(root, s_am_layer);
     layer_add_child(root, s_cals_layer);
 
+    // Battery indicator (added last so it draws on top of all views)
+    s_battery_layer = layer_create(GRect(0, 0, b.size.w, BATTERY_LINE_HEIGHT));
+    layer_set_update_proc(s_battery_layer, battery_update_proc);
+    layer_set_hidden(s_battery_layer, !s_show_battery);
+    layer_add_child(root, s_battery_layer);
+
     // Initial
     refresh_temperature_display();
     update_time();
@@ -672,6 +716,7 @@ static void window_unload(Window *win) {
 
     layer_destroy(s_tracking_layer);
     layer_destroy(s_bg_layer);
+    layer_destroy(s_battery_layer);
 
     unload_glyphs();
 }
@@ -687,6 +732,8 @@ static void init(void) {
 
     tick_timer_service_subscribe(MINUTE_UNIT, tick_handler);
     accel_tap_service_subscribe(tap_handler);
+    battery_state_service_subscribe(battery_handler);
+    s_battery_level = battery_state_service_peek().charge_percent;
 
     s_tracking_display_timeout = persist_exists(MESSAGE_KEY_HEALTH_DISPLAY_TIMEOUT)
         ? clamp_timeout_seconds(persist_read_int(MESSAGE_KEY_HEALTH_DISPLAY_TIMEOUT))
@@ -697,6 +744,9 @@ static void init(void) {
     s_use_miles = persist_exists(MESSAGE_KEY_DIST_UNIT_IS_MI)
         ? persist_read_int(MESSAGE_KEY_DIST_UNIT_IS_MI) != 0
         : true;
+    s_show_battery = persist_exists(MESSAGE_KEY_SHOW_BATTERY)
+        ? persist_read_int(MESSAGE_KEY_SHOW_BATTERY) != 0
+        : false;
 
     app_message_register_inbox_received(inbox_received);
     app_message_register_inbox_dropped(inbox_dropped);
@@ -705,6 +755,7 @@ static void init(void) {
 
 static void deinit(void) {
     cancel_tracking_timer();
+    battery_state_service_unsubscribe();
     accel_tap_service_unsubscribe();
     tick_timer_service_unsubscribe();
     window_destroy(s_window);

@@ -13,6 +13,9 @@ Station Clock is a Pebble watchface for Pebble Time 2 (`emery`) with a split-pan
   - Distance walked
   - Active minutes
   - Calories
+- Optional battery indicator: thin colored line along the top edge of the screen
+  - Width shrinks as battery discharges
+  - Color changes by charge level: green (100–75%), yellow (75–50%), orange (50–25%), red (25–0%)
 - Tap anywhere to switch between screens
   - Includes tap debounce (2 seconds) to prevent accidental rapid toggles
 - Optional auto-return timeout from tracking screen back to main screen
@@ -37,6 +40,7 @@ Settings are provided via Clay (`src/pkjs/config.json`) and are persisted on-wat
 
 - `Use Fahrenheit` (`TEMP_UNIT_IS_F`)
 - `Use Miles` (`DIST_UNIT_IS_MI`)
+- `Show Battery` (`SHOW_BATTERY`, off by default)
 - `Tracking Timeout` (`HEALTH_DISPLAY_TIMEOUT`, 0-300 seconds)
 
 ## Build and Run
