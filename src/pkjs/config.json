@@ -18,7 +18,8 @@
         "messageKey": "DIST_UNIT_IS_MI",
         "label": "Use Miles",
         "description": "Off = Kilometers",
-        "defaultValue": true
+        "defaultValue": true,
+        "capabilities": ["HEALTH"]
       },
       {
         "type": "toggle",
@@ -33,6 +34,7 @@
         "label": "Tracking Timeout",
         "description": "Seconds before returning to main screen (blank/0 disables)",
         "defaultValue": "",
+        "capabilities": ["HEALTH"],
         "attributes": {
           "type": "number",
           "min": "0",
