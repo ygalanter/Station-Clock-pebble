@@ -2,8 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define ROW_H 76
-#define HALF_W 100
 #define GLYPH_SPACING 1   // px between adjacent glyphs
 #define TAP_DEBOUNCE_SECONDS 2
 #define MAX_TRACKING_TIMEOUT_SECONDS 300
@@ -54,34 +52,35 @@ static GBitmap* glyph_lookup(GlyphSet gs, char ch) {
     return NULL;
 }
 
-static int text_width(GlyphSet gs, const char *s) {
-    int w = 0, n = 0;
-    for (const char *p = s; *p; p++) {
-        GBitmap *b = glyph_lookup(gs, *p);
-        if (b) { w += gbitmap_get_bounds(b).size.w; n++; }
-    }
-    if (n > 1) w += (n - 1) * GLYPH_SPACING;
-    return w;
-}
-
 typedef enum { ALIGN_LEFT, ALIGN_CENTER, ALIGN_RIGHT } Align;
 
 static void draw_text_glyphs(GContext *ctx, GRect frame, GlyphSet gs, const char *s, Align align) {
-    int total = text_width(gs, s);
+    // Sum glyph widths and find the tallest glyph in one pass.
+    int glyphs_w = 0, n = 0, max_h = 0;
+    for (const char *p = s; *p; p++) {
+        GBitmap *b = glyph_lookup(gs, *p);
+        if (!b) continue;
+        GRect gb = gbitmap_get_bounds(b);
+        glyphs_w += gb.size.w;
+        if (gb.size.h > max_h) max_h = gb.size.h;
+        n++;
+    }
+    if (n == 0) return;
+
+    // Use the normal spacing, but compress it (down to 0) if the string would
+    // otherwise overflow its cell -- e.g. a two-digit month AND day ("12/28").
+    int spacing = GLYPH_SPACING;
+    if (n > 1) {
+        int max_spacing = (frame.size.w - glyphs_w) / (n - 1);
+        if (max_spacing < spacing) spacing = max_spacing < 0 ? 0 : max_spacing;
+    }
+
+    int total = glyphs_w + (n - 1) * spacing;
     int x;
     if (align == ALIGN_CENTER) x = frame.origin.x + (frame.size.w - total) / 2;
     else if (align == ALIGN_RIGHT) x = frame.origin.x + frame.size.w - total;
     else x = frame.origin.x;
 
-    // Find max glyph height for vertical centering
-    int max_h = 0;
-    for (const char *p = s; *p; p++) {
-        GBitmap *b = glyph_lookup(gs, *p);
-        if (b) {
-            int h = gbitmap_get_bounds(b).size.h;
-            if (h > max_h) max_h = h;
-        }
-    }
     int y_base = frame.origin.y + (frame.size.h - max_h) / 2;
 
     graphics_context_set_compositing_mode(ctx, GCompOpSet);
@@ -92,7 +91,7 @@ static void draw_text_glyphs(GContext *ctx, GRect frame, GlyphSet gs, const char
         // bottom-align each glyph with max_h baseline
         int y = y_base + (max_h - gb.size.h);
         graphics_draw_bitmap_in_rect(ctx, b, GRect(x, y, gb.size.w, gb.size.h));
-        x += gb.size.w + GLYPH_SPACING;
+        x += gb.size.w + spacing;
     }
 }
 
@@ -101,23 +100,32 @@ static void draw_text_glyphs(GContext *ctx, GRect frame, GlyphSet gs, const char
 static Window *s_window;
 static Layer *s_bg_layer;
 
+// Layout geometry, derived from the root layer bounds in window_load so the
+// face scales between emery (200x228) and the 144x168 platforms.
+static int s_row_h;   // one of three vertical bands
+static int s_half_w;  // half the screen width (left/right cell)
+
 static char s_time_buf[8];
 static char s_day_buf[8];
 static char s_date_buf[16];
 static char s_temp_buf[16];
+#if defined(PBL_HEALTH)
 static char s_steps_buf[12];
 static char s_dist_buf[16];
 static char s_am_buf[12];
 static char s_cals_buf[12];
+#endif
 
 static int s_temperature = -999;
 static int s_weather_code = -1;
 static int s_is_day = 1;
 
 static ViewMode s_view = VIEW_MAIN;
+#if defined(PBL_HEALTH)
 static uint16_t s_tracking_display_timeout = 0;
 static AppTimer *s_tracking_view_timer = NULL;
 static time_t s_last_tap_time = 0;
+#endif
 static bool s_use_fahrenheit = true;
 static bool s_use_miles = true;
 static bool s_show_battery = false;
@@ -128,57 +136,87 @@ static Layer *s_time_layer;
 static Layer *s_temp_layer;
 static Layer *s_day_layer;
 static Layer *s_date_layer;
+#if defined(PBL_HEALTH)
 static Layer *s_steps_layer;
 static Layer *s_dist_layer;
 static Layer *s_am_layer;
 static Layer *s_cals_layer;
+#endif
 
 // Battery indicator
 static Layer *s_battery_layer;
 
-// Weather + tracking icons
+// Weather icon
 static BitmapLayer *s_weather_icon_layer;
 static GBitmap *s_weather_bitmap;
+
+// Tracking icons (health platforms only)
+#if defined(PBL_HEALTH)
 static Layer *s_tracking_layer;
 static BitmapLayer *s_steps_icon, *s_dist_icon, *s_am_icon, *s_cals_icon;
 static GBitmap *s_steps_bitmap, *s_dist_bitmap, *s_am_bitmap, *s_cals_bitmap;
+#endif
 
 // ----- Background bands -----
 
 static void fill_dithered_time_band(GContext *ctx, int width) {
+    graphics_context_set_fill_color(ctx, GColorBlack);
+    graphics_fill_rect(ctx, GRect(0, 0, width, s_row_h), 0, GCornerNone);
+
+#if defined(PBL_COLOR)
     // Pebble's neutral palette has no color between black and dark gray.
     // Use sparse dark-gray pixels over black to approximate an in-between tone.
-    graphics_context_set_fill_color(ctx, GColorBlack);
-    graphics_fill_rect(ctx, GRect(0, 0, width, ROW_H), 0, GCornerNone);
-
     graphics_context_set_fill_color(ctx, GColorDarkGray);
-    for (int y = 0; y < ROW_H; y += 2) {
+    for (int y = 0; y < s_row_h; y += 2) {
         for (int x = 0; x < width; x += 2) {
             graphics_fill_rect(ctx, GRect(x, y, 1, 1), 0, GCornerNone);
         }
     }
+#endif
 }
 
 static void bg_update_proc(Layer *layer, GContext *ctx) {
     GRect b = layer_get_bounds(layer);
     fill_dithered_time_band(ctx, b.size.w);
+#if defined(PBL_COLOR)
     graphics_context_set_fill_color(ctx, GColorDarkGray);
-    graphics_fill_rect(ctx, GRect(0, ROW_H, HALF_W, ROW_H), 0, GCornerNone);
+    graphics_fill_rect(ctx, GRect(0, s_row_h, s_half_w, s_row_h), 0, GCornerNone);
     graphics_context_set_fill_color(ctx, GColorArmyGreen);
-    graphics_fill_rect(ctx, GRect(HALF_W, ROW_H, HALF_W, ROW_H), 0, GCornerNone);
+    graphics_fill_rect(ctx, GRect(s_half_w, s_row_h, s_half_w, s_row_h), 0, GCornerNone);
     graphics_context_set_fill_color(ctx, GColorBulgarianRose);
-    graphics_fill_rect(ctx, GRect(0, ROW_H * 2, HALF_W, ROW_H), 0, GCornerNone);
+    graphics_fill_rect(ctx, GRect(0, s_row_h * 2, s_half_w, s_row_h), 0, GCornerNone);
     graphics_context_set_fill_color(ctx, GColorDarkGreen);
-    graphics_fill_rect(ctx, GRect(HALF_W, ROW_H * 2, HALF_W, ROW_H), 0, GCornerNone);
+    graphics_fill_rect(ctx, GRect(s_half_w, s_row_h * 2, s_half_w, s_row_h), 0, GCornerNone);
+#else
+    // B&W: solid black tiles separated by clean white lines.
+    graphics_context_set_fill_color(ctx, GColorBlack);
+    graphics_fill_rect(ctx, GRect(0, s_row_h, b.size.w, b.size.h - s_row_h), 0, GCornerNone);
+    graphics_context_set_stroke_color(ctx, GColorWhite);
+    graphics_draw_line(ctx, GPoint(0, s_row_h),     GPoint(b.size.w, s_row_h));
+    graphics_draw_line(ctx, GPoint(0, s_row_h * 2), GPoint(b.size.w, s_row_h * 2));
+    graphics_draw_line(ctx, GPoint(s_half_w, s_row_h), GPoint(s_half_w, b.size.h));
+#endif
 }
 
+#if defined(PBL_HEALTH)
 static void tracking_update_proc(Layer *layer, GContext *ctx) {
     GRect b = layer_get_bounds(layer);
     int rh = b.size.h / 4;
+#if defined(PBL_COLOR)
     graphics_context_set_fill_color(ctx, GColorDarkGray);
     graphics_fill_rect(ctx, GRect(0, 0,       b.size.w, rh), 0, GCornerNone);
     graphics_fill_rect(ctx, GRect(0, rh * 2,  b.size.w, rh), 0, GCornerNone);
+#else
+    // B&W: solid black rows separated by clean white lines.
+    graphics_context_set_fill_color(ctx, GColorBlack);
+    graphics_fill_rect(ctx, GRect(0, 0, b.size.w, b.size.h), 0, GCornerNone);
+    graphics_context_set_stroke_color(ctx, GColorWhite);
+    for (int i = 1; i < 4; i++) {
+        graphics_draw_line(ctx, GPoint(0, i * rh), GPoint(b.size.w, i * rh));
+    }
+#endif
 }
+#endif
 
 // ----- Text layer update_procs -----
 
@@ -186,10 +224,12 @@ static void time_update(Layer *l, GContext *ctx)  { draw_text_glyphs(ctx, layer_
 static void temp_update(Layer *l, GContext *ctx)  { draw_text_glyphs(ctx, layer_get_bounds(l), GS_TEMP, s_temp_buf,  ALIGN_CENTER); }
 static void day_update(Layer *l, GContext *ctx)   { draw_text_glyphs(ctx, layer_get_bounds(l), GS_DAY,  s_day_buf,   ALIGN_CENTER); }
 static void date_update(Layer *l, GContext *ctx)  { draw_text_glyphs(ctx, layer_get_bounds(l), GS_DATE, s_date_buf,  ALIGN_CENTER); }
+#if defined(PBL_HEALTH)
 static void steps_update(Layer *l, GContext *ctx) { draw_text_glyphs(ctx, layer_get_bounds(l), GS_TRACKING, s_steps_buf, ALIGN_RIGHT); }
 static void dist_update(Layer *l, GContext *ctx)  { draw_text_glyphs(ctx, layer_get_bounds(l), GS_TRACKING, s_dist_buf,  ALIGN_RIGHT); }
 static void am_update(Layer *l, GContext *ctx)    { draw_text_glyphs(ctx, layer_get_bounds(l), GS_TRACKING, s_am_buf,    ALIGN_RIGHT); }
 static void cals_update(Layer *l, GContext *ctx)  { draw_text_glyphs(ctx, layer_get_bounds(l), GS_TRACKING, s_cals_buf,  ALIGN_RIGHT); }
+#endif
 
 // ----- Weather mapping -----
 
@@ -227,13 +267,18 @@ static void battery_update_proc(Layer *layer, GContext *ctx) {
     GRect b = layer_get_bounds(layer);
     int bar_w = (s_battery_level * b.size.w) / 100;
 
+#if defined(PBL_COLOR)
     GColor color;
     if (s_battery_level > 75) color = GColorGreen;
     else if (s_battery_level > 50) color = GColorYellow;
     else if (s_battery_level > 25) color = GColorOrange;
     else color = GColorRed;
-
     graphics_context_set_fill_color(ctx, color);
+#else
+    // B&W: the color-coded levels all reduce to black (invisible on the black
+    // background), so use white -- level is still conveyed by the bar width.
+    graphics_context_set_fill_color(ctx, GColorWhite);
+#endif
     graphics_fill_rect(ctx, GRect(0, 0, bar_w, b.size.h), 0, GCornerNone);
 }
 
@@ -313,21 +358,11 @@ static void refresh_health(void) {
     layer_mark_dirty(s_am_layer);
     layer_mark_dirty(s_cals_layer);
 }
-#else
-static void refresh_health(void) {
-    snprintf(s_steps_buf, sizeof(s_steps_buf), "0");
-    snprintf(s_dist_buf,  sizeof(s_dist_buf),  s_use_miles ? "0.0MI" : "0.0KM");
-    snprintf(s_am_buf,    sizeof(s_am_buf),    "00:00");
-    snprintf(s_cals_buf,  sizeof(s_cals_buf),  "0");
-    layer_mark_dirty(s_steps_layer);
-    layer_mark_dirty(s_dist_layer);
-    layer_mark_dirty(s_am_layer);
-    layer_mark_dirty(s_cals_layer);
-}
 #endif
 
 // ----- View switching -----
 
+#if defined(PBL_HEALTH)
 static uint16_t clamp_timeout_seconds(int value) {
     if (value < 0) return 0;
     if (value > MAX_TRACKING_TIMEOUT_SECONDS) return MAX_TRACKING_TIMEOUT_SECONDS;
@@ -341,6 +376,7 @@ static uint16_t parse_timeout_tuple(Tuple *t) {
     }
     return clamp_timeout_seconds((int)t->value->int32);
 }
+#endif
 
 static bool parse_bool_tuple(Tuple *t, bool fallback) {
     if (!t) return fallback;
@@ -354,6 +390,7 @@ static bool parse_bool_tuple(Tuple *t, bool fallback) {
     return t->value->uint8 != 0;
 }
 
+#if defined(PBL_HEALTH)
 static void cancel_tracking_timer(void) {
     if (s_tracking_view_timer) {
         app_timer_cancel(s_tracking_view_timer);
@@ -371,11 +408,11 @@ static void schedule_tracking_timer(void) {
         );
     }
 }
+#endif
 
 static void show_view(ViewMode v) {
     s_view = v;
     bool main_hidden = (v != VIEW_MAIN);
-    bool track_hidden = (v != VIEW_TRACKING);
     layer_set_hidden(s_bg_layer, main_hidden);
     layer_set_hidden(s_time_layer, main_hidden);
     layer_set_hidden(s_day_layer, main_hidden);
@@ -383,6 +420,8 @@ static void show_view(ViewMode v) {
     layer_set_hidden(s_temp_layer, main_hidden);
     layer_set_hidden(bitmap_layer_get_layer(s_weather_icon_layer), main_hidden);
 
+#if defined(PBL_HEALTH)
+    bool track_hidden = (v != VIEW_TRACKING);
     layer_set_hidden(s_tracking_layer, track_hidden);
     layer_set_hidden(s_steps_layer, track_hidden);
     layer_set_hidden(s_dist_layer,  track_hidden);
@@ -399,8 +438,10 @@ static void show_view(ViewMode v) {
     } else {
         cancel_tracking_timer();
     }
+#endif
 }
 
+#if defined(PBL_HEALTH)
 static void return_to_main_display(void *ctx) {
     (void)ctx;
     s_tracking_view_timer = NULL;
@@ -408,6 +449,7 @@ static void return_to_main_display(void *ctx) {
         show_view(VIEW_MAIN);
     }
 }
+#endif
 
 static void refresh_temperature_display(void) {
     if (s_temperature > -900) {
@@ -423,6 +465,7 @@ static void refresh_temperature_display(void) {
     layer_mark_dirty(s_temp_layer);
 }
 
+#if defined(PBL_HEALTH)
 static void tap_handler(AccelAxisType axis, int32_t direction) {
     (void)axis;
     (void)direction;
@@ -433,6 +476,7 @@ static void tap_handler(AccelAxisType axis, int32_t direction) {
     s_last_tap_time = now;
     show_view(s_view == VIEW_MAIN ? VIEW_TRACKING : VIEW_MAIN);
 }
+#endif
 
 // ----- AppMessage -----
 
@@ -446,7 +490,9 @@ static void request_weather(void) {
 
 static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
     update_time();
+#if defined(PBL_HEALTH)
     if (s_view == VIEW_TRACKING) refresh_health();
+#endif
     if (tick_time->tm_min % 30 == 0) request_weather();
 }
 
@@ -454,7 +500,9 @@ static void inbox_received(DictionaryIterator *iter, void *ctx) {
     Tuple *t_temp = dict_find(iter, MESSAGE_KEY_TEMPERATURE);
     Tuple *t_code = dict_find(iter, MESSAGE_KEY_WEATHER_CODE);
     Tuple *t_day  = dict_find(iter, MESSAGE_KEY_IS_DAY);
+#if defined(PBL_HEALTH)
     Tuple *t_timeout = dict_find(iter, MESSAGE_KEY_HEALTH_DISPLAY_TIMEOUT);
+#endif
     Tuple *t_temp_unit = dict_find(iter, MESSAGE_KEY_TEMP_UNIT_IS_F);
     Tuple *t_dist_unit = dict_find(iter, MESSAGE_KEY_DIST_UNIT_IS_MI);
     Tuple *t_show_batt = dict_find(iter, MESSAGE_KEY_SHOW_BATTERY);
@@ -477,8 +525,11 @@ static void inbox_received(DictionaryIterator *iter, void *ctx) {
     if (t_dist_unit) {
         s_use_miles = parse_bool_tuple(t_dist_unit, true);
         persist_write_int(MESSAGE_KEY_DIST_UNIT_IS_MI, s_use_miles ? 1 : 0);
+#if defined(PBL_HEALTH)
         if (s_view == VIEW_TRACKING) refresh_health();
+#endif
     }
+#if defined(PBL_HEALTH)
     if (t_timeout) {
         s_tracking_display_timeout = parse_timeout_tuple(t_timeout);
         persist_write_int(MESSAGE_KEY_HEALTH_DISPLAY_TIMEOUT, s_tracking_display_timeout);
@@ -488,6 +539,7 @@ static void inbox_received(DictionaryIterator *iter, void *ctx) {
             cancel_tracking_timer();
         }
     }
+#endif
 
     if (t_show_batt) {
         s_show_battery = parse_bool_tuple(t_show_batt, false);
@@ -596,6 +648,10 @@ static void window_load(Window *win) {
     Layer *root = window_get_root_layer(win);
     GRect b = layer_get_bounds(root);
 
+    // Derive layout geometry so the 2x3 grid scales across platforms.
+    s_row_h  = b.size.h / 3;
+    s_half_w = b.size.w / 2;
+
     load_big();
     load_red();
     load_green();
@@ -607,64 +663,61 @@ static void window_load(Window *win) {
     layer_add_child(root, s_bg_layer);
 
     // MAIN VIEW
-    s_time_layer = layer_create(GRect(0, 0, b.size.w, ROW_H));
+    s_time_layer = layer_create(GRect(0, 0, b.size.w, s_row_h));
     layer_set_update_proc(s_time_layer, time_update);
     layer_add_child(root, s_time_layer);
 
-    int wx = (HALF_W - 90) / 2;
-    int wy = ROW_H + (ROW_H - 62) / 2;
-    s_weather_icon_layer = bitmap_layer_create(GRect(wx, wy, 90, 62));
+    // Weather icon fills the left cell of the middle row; the BitmapLayer
+    // centers the (platform-specific sized) bitmap automatically.
+    s_weather_icon_layer = bitmap_layer_create(GRect(0, s_row_h, s_half_w, s_row_h));
     bitmap_layer_set_compositing_mode(s_weather_icon_layer, GCompOpSet);
     layer_add_child(root, bitmap_layer_get_layer(s_weather_icon_layer));
 
-    s_temp_layer = layer_create(GRect(HALF_W, ROW_H, HALF_W, ROW_H));
+    s_temp_layer = layer_create(GRect(s_half_w, s_row_h, s_half_w, s_row_h));
     layer_set_update_proc(s_temp_layer, temp_update);
     layer_add_child(root, s_temp_layer);
 
-    s_day_layer = layer_create(GRect(0, ROW_H * 2, HALF_W, ROW_H));
+    s_day_layer = layer_create(GRect(0, s_row_h * 2, s_half_w, s_row_h));
     layer_set_update_proc(s_day_layer, day_update);
     layer_add_child(root, s_day_layer);
 
-    s_date_layer = layer_create(GRect(HALF_W, ROW_H * 2, HALF_W, ROW_H));
+    s_date_layer = layer_create(GRect(s_half_w, s_row_h * 2, s_half_w, s_row_h));
     layer_set_update_proc(s_date_layer, date_update);
     layer_add_child(root, s_date_layer);
 
-    // TRACKING VIEW
+#if defined(PBL_HEALTH)
+    // TRACKING VIEW (health platforms only)
     s_tracking_layer = layer_create(b);
     layer_set_update_proc(s_tracking_layer, tracking_update_proc);
     layer_add_child(root, s_tracking_layer);
 
     int rh = b.size.h / 4;
-    int icon_x = 15;
-    int icon_y_off = (rh - 42) / 2;
+    // Layout ratios chosen so emery (w=200) reproduces the original pixel
+    // positions exactly (icon at x=15, values at x=65, 8px right margin) while
+    // scaling proportionally on the 144px platforms.
+    int icon_x = (b.size.w * 15) / 200;
 
     s_steps_bitmap = gbitmap_create_with_resource(RESOURCE_ID_IMG_STEPS);
     s_dist_bitmap  = gbitmap_create_with_resource(RESOURCE_ID_IMG_DIST);
     s_am_bitmap    = gbitmap_create_with_resource(RESOURCE_ID_IMG_AM);
     s_cals_bitmap  = gbitmap_create_with_resource(RESOURCE_ID_IMG_CALS);
 
-    s_steps_icon = bitmap_layer_create(GRect(icon_x, 0 * rh + icon_y_off, 42, 42));
-    s_dist_icon  = bitmap_layer_create(GRect(icon_x, 1 * rh + icon_y_off, 42, 42));
-    s_am_icon    = bitmap_layer_create(GRect(icon_x, 2 * rh + icon_y_off, 42, 42));
-    s_cals_icon  = bitmap_layer_create(GRect(icon_x, 3 * rh + icon_y_off, 42, 42));
+    // Each icon sits at a fixed left margin, vertically centered in its row,
+    // sized to the (platform-specific) bitmap.
+    GBitmap *icon_bmps[4] = { s_steps_bitmap, s_dist_bitmap, s_am_bitmap, s_cals_bitmap };
+    BitmapLayer **icon_layers[4] = { &s_steps_icon, &s_dist_icon, &s_am_icon, &s_cals_icon };
+    for (int i = 0; i < 4; i++) {
+        GRect ib = gbitmap_get_bounds(icon_bmps[i]);
+        GRect frame = GRect(icon_x, i * rh + (rh - ib.size.h) / 2, ib.size.w, ib.size.h);
+        *icon_layers[i] = bitmap_layer_create(frame);
+        bitmap_layer_set_compositing_mode(*icon_layers[i], GCompOpSet);
+        bitmap_layer_set_bitmap(*icon_layers[i], icon_bmps[i]);
+        layer_add_child(root, bitmap_layer_get_layer(*icon_layers[i]));
+    }
 
-    bitmap_layer_set_compositing_mode(s_steps_icon, GCompOpSet);
-    bitmap_layer_set_compositing_mode(s_dist_icon,  GCompOpSet);
-    bitmap_layer_set_compositing_mode(s_am_icon,    GCompOpSet);
-    bitmap_layer_set_compositing_mode(s_cals_icon,  GCompOpSet);
-
-    bitmap_layer_set_bitmap(s_steps_icon, s_steps_bitmap);
-    bitmap_layer_set_bitmap(s_dist_icon,  s_dist_bitmap);
-    bitmap_layer_set_bitmap(s_am_icon,    s_am_bitmap);
-    bitmap_layer_set_bitmap(s_cals_icon,  s_cals_bitmap);
-
-    layer_add_child(root, bitmap_layer_get_layer(s_steps_icon));
-    layer_add_child(root, bitmap_layer_get_layer(s_dist_icon));
-    layer_add_child(root, bitmap_layer_get_layer(s_am_icon));
-    layer_add_child(root, bitmap_layer_get_layer(s_cals_icon));
-
-    int val_x = 65;
-    int val_w = b.size.w - val_x - 8;
+    int val_x = (b.size.w * 65) / 200;
+    int val_margin = (b.size.w * 8) / 200;
+    int val_w = b.size.w - val_x - val_margin;
 
     s_steps_layer = layer_create(GRect(val_x, 0 * rh, val_w, rh));
     s_dist_layer  = layer_create(GRect(val_x, 1 * rh, val_w, rh));
@@ -678,6 +731,7 @@ static void window_load(Window *win) {
     layer_add_child(root, s_dist_layer);
     layer_add_child(root, s_am_layer);
     layer_add_child(root, s_cals_layer);
+#endif
 
     // Battery indicator (added last so it draws on top of all views)
     s_battery_layer = layer_create(GRect(0, 0, b.size.w, BATTERY_LINE_HEIGHT));
@@ -697,13 +751,15 @@ static void window_unload(Window *win) {
     layer_destroy(s_temp_layer);
     layer_destroy(s_day_layer);
     layer_destroy(s_date_layer);
+
+    bitmap_layer_destroy(s_weather_icon_layer);
+    if (s_weather_bitmap) gbitmap_destroy(s_weather_bitmap);
+
+#if defined(PBL_HEALTH)
     layer_destroy(s_steps_layer);
     layer_destroy(s_dist_layer);
     layer_destroy(s_am_layer);
     layer_destroy(s_cals_layer);
-
-    bitmap_layer_destroy(s_weather_icon_layer);
-    if (s_weather_bitmap) gbitmap_destroy(s_weather_bitmap);
 
     bitmap_layer_destroy(s_steps_icon);
     bitmap_layer_destroy(s_dist_icon);
@@ -715,6 +771,7 @@ static void window_unload(Window *win) {
     gbitmap_destroy(s_cals_bitmap);
 
     layer_destroy(s_tracking_layer);
+#endif
     layer_destroy(s_bg_layer);
     layer_destroy(s_battery_layer);
 
@@ -722,9 +779,11 @@ static void window_unload(Window *win) {
 }
 
 static void init(void) {
+#if defined(PBL_HEALTH)
     s_tracking_display_timeout = persist_exists(MESSAGE_KEY_HEALTH_DISPLAY_TIMEOUT)
         ? clamp_timeout_seconds(persist_read_int(MESSAGE_KEY_HEALTH_DISPLAY_TIMEOUT))
         : 0;
+#endif
     s_use_fahrenheit = persist_exists(MESSAGE_KEY_TEMP_UNIT_IS_F)
         ? persist_read_int(MESSAGE_KEY_TEMP_UNIT_IS_F) != 0
         : true;
@@ -744,7 +803,9 @@ static void init(void) {
     window_stack_push(s_window, true);
 
     tick_timer_service_subscribe(MINUTE_UNIT, tick_handler);
-    accel_tap_service_subscribe(tap_handler);
+#if defined(PBL_HEALTH)
+    accel_tap_service_subscribe(tap_handler);  // tap toggles the tracking view
+#endif
     battery_state_service_subscribe(battery_handler);
     s_battery_level = battery_state_service_peek().charge_percent;
 
@@ -754,9 +815,11 @@ static void init(void) {
 }
 
 static void deinit(void) {
+#if defined(PBL_HEALTH)
     cancel_tracking_timer();
-    battery_state_service_unsubscribe();
     accel_tap_service_unsubscribe();
+#endif
+    battery_state_service_unsubscribe();
     tick_timer_service_unsubscribe();
     window_destroy(s_window);
 }

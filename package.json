@@ -1,20 +1,33 @@
 {
   "name": "station-clock-pebble",
   "author": "Comfortably Numb",
-  "version": "1.3.0",
-  "keywords": ["pebble-app"],
+  "version": "1.5.0",
+  "keywords": [
+    "pebble-app"
+  ],
   "private": true,
   "dependencies": {
-    "pebble-clay": "^1.0.4"
+    "@rebble/clay": "^1.0.10"
   },
   "pebble": {
     "displayName": "Station Clock",
     "uuid": "42680af0-db2e-42eb-871d-508af3365c57",
     "sdkVersion": "3",
     "enableMultiJS": true,
-    "targetPlatforms": ["emery"],
-    "watchapp": { "watchface": true },
-    "capabilities": ["location", "health"],
+    "targetPlatforms": [
+      "emery",
+      "basalt",
+      "diorite",
+      "flint",
+      "aplite"
+    ],
+    "watchapp": {
+      "watchface": true
+    },
+    "capabilities": [
+      "location",
+      "health"
+    ],
     "messageKeys": [
       "TEMPERATURE",
       "WEATHER_CODE",
@@ -27,89 +40,1954 @@
     ],
     "resources": {
       "media": [
-        { "type": "bitmap", "name": "IMG_W_CLEAR",          "file": "images/Weather/clear.png" },
-        { "type": "bitmap", "name": "IMG_W_CLEAR_NIGHT",    "file": "images/Weather/clearnight.png" },
-        { "type": "bitmap", "name": "IMG_W_PARTLY_CLOUDY",  "file": "images/Weather/partlycloudy.png" },
-        { "type": "bitmap", "name": "IMG_W_PARTLY_CLOUDY_NIGHT", "file": "images/Weather/partlycloudynight.png" },
-        { "type": "bitmap", "name": "IMG_W_SCATTERED",      "file": "images/Weather/scatteredclouds.png" },
-        { "type": "bitmap", "name": "IMG_W_CLOUDY_NIGHT",   "file": "images/Weather/cloudynight.png" },
-        { "type": "bitmap", "name": "IMG_W_RAIN",           "file": "images/Weather/rain02.png" },
-        { "type": "bitmap", "name": "IMG_W_RAIN_HEAVY",     "file": "images/Weather/rain03.png" },
-        { "type": "bitmap", "name": "IMG_W_STORM",          "file": "images/Weather/thunderstorms01.png" },
-        { "type": "bitmap", "name": "IMG_W_FOG",            "file": "images/Weather/fog.png" },
-        { "type": "bitmap", "name": "IMG_W_ICE",            "file": "images/Weather/ice.png" },
-        { "type": "bitmap", "name": "IMG_W_SNOW",           "file": "images/Weather/snow.png" },
-        { "type": "bitmap", "name": "IMG_W_UNKNOWN",        "file": "images/Weather/unknown.png" },
-        { "type": "bitmap", "name": "IMG_W_WAIT",           "file": "images/Weather/wait.png" },
-        { "type": "bitmap", "name": "IMG_STEPS",            "file": "images/Tracking/stat_steps.png" },
-        { "type": "bitmap", "name": "IMG_DIST",             "file": "images/Tracking/stat_dist.png" },
-        { "type": "bitmap", "name": "IMG_AM",               "file": "images/Tracking/stat_am.png" },
-        { "type": "bitmap", "name": "IMG_CALS",             "file": "images/Tracking/stat_cals.png" },
-        { "type": "bitmap", "name": "IMG_GLYPH_BW_COLON", "file": "images/glyphs/BW_COLON.png" },
-        { "type": "bitmap", "name": "IMG_GLYPH_BW_D0", "file": "images/glyphs/BW_D0.png" },
-        { "type": "bitmap", "name": "IMG_GLYPH_BW_D1", "file": "images/glyphs/BW_D1.png" },
-        { "type": "bitmap", "name": "IMG_GLYPH_BW_D2", "file": "images/glyphs/BW_D2.png" },
-        { "type": "bitmap", "name": "IMG_GLYPH_BW_D3", "file": "images/glyphs/BW_D3.png" },
-        { "type": "bitmap", "name": "IMG_GLYPH_BW_D4", "file": "images/glyphs/BW_D4.png" },
-        { "type": "bitmap", "name": "IMG_GLYPH_BW_D5", "file": "images/glyphs/BW_D5.png" },
-        { "type": "bitmap", "name": "IMG_GLYPH_BW_D6", "file": "images/glyphs/BW_D6.png" },
-        { "type": "bitmap", "name": "IMG_GLYPH_BW_D7", "file": "images/glyphs/BW_D7.png" },
-        { "type": "bitmap", "name": "IMG_GLYPH_BW_D8", "file": "images/glyphs/BW_D8.png" },
-        { "type": "bitmap", "name": "IMG_GLYPH_BW_D9", "file": "images/glyphs/BW_D9.png" },
-        { "type": "bitmap", "name": "IMG_GLYPH_MG_D0", "file": "images/glyphs/MG_D0.png" },
-        { "type": "bitmap", "name": "IMG_GLYPH_MG_D1", "file": "images/glyphs/MG_D1.png" },
-        { "type": "bitmap", "name": "IMG_GLYPH_MG_D2", "file": "images/glyphs/MG_D2.png" },
-        { "type": "bitmap", "name": "IMG_GLYPH_MG_D3", "file": "images/glyphs/MG_D3.png" },
-        { "type": "bitmap", "name": "IMG_GLYPH_MG_D4", "file": "images/glyphs/MG_D4.png" },
-        { "type": "bitmap", "name": "IMG_GLYPH_MG_D5", "file": "images/glyphs/MG_D5.png" },
-        { "type": "bitmap", "name": "IMG_GLYPH_MG_D6", "file": "images/glyphs/MG_D6.png" },
-        { "type": "bitmap", "name": "IMG_GLYPH_MG_D7", "file": "images/glyphs/MG_D7.png" },
-        { "type": "bitmap", "name": "IMG_GLYPH_MG_D8", "file": "images/glyphs/MG_D8.png" },
-        { "type": "bitmap", "name": "IMG_GLYPH_MG_D9", "file": "images/glyphs/MG_D9.png" },
-        { "type": "bitmap", "name": "IMG_GLYPH_MG_SLASH", "file": "images/glyphs/MG_SLASH.png" },
-        { "type": "bitmap", "name": "IMG_GLYPH_MR_A", "file": "images/glyphs/MR_A.png" },
-        { "type": "bitmap", "name": "IMG_GLYPH_MR_D", "file": "images/glyphs/MR_D.png" },
-        { "type": "bitmap", "name": "IMG_GLYPH_MR_E", "file": "images/glyphs/MR_E.png" },
-        { "type": "bitmap", "name": "IMG_GLYPH_MR_F", "file": "images/glyphs/MR_F.png" },
-        { "type": "bitmap", "name": "IMG_GLYPH_MR_H", "file": "images/glyphs/MR_H.png" },
-        { "type": "bitmap", "name": "IMG_GLYPH_MR_I", "file": "images/glyphs/MR_I.png" },
-        { "type": "bitmap", "name": "IMG_GLYPH_MR_M", "file": "images/glyphs/MR_M.png" },
-        { "type": "bitmap", "name": "IMG_GLYPH_MR_N", "file": "images/glyphs/MR_N.png" },
-        { "type": "bitmap", "name": "IMG_GLYPH_MR_O", "file": "images/glyphs/MR_O.png" },
-        { "type": "bitmap", "name": "IMG_GLYPH_MR_R", "file": "images/glyphs/MR_R.png" },
-        { "type": "bitmap", "name": "IMG_GLYPH_MR_S", "file": "images/glyphs/MR_S.png" },
-        { "type": "bitmap", "name": "IMG_GLYPH_MR_T", "file": "images/glyphs/MR_T.png" },
-        { "type": "bitmap", "name": "IMG_GLYPH_MR_U", "file": "images/glyphs/MR_U.png" },
-        { "type": "bitmap", "name": "IMG_GLYPH_MR_W", "file": "images/glyphs/MR_W.png" },
-        { "type": "bitmap", "name": "IMG_GLYPH_MW_COLON", "file": "images/glyphs/MW_COLON.png" },
-        { "type": "bitmap", "name": "IMG_GLYPH_MW_D0", "file": "images/glyphs/MW_D0.png" },
-        { "type": "bitmap", "name": "IMG_GLYPH_MW_D1", "file": "images/glyphs/MW_D1.png" },
-        { "type": "bitmap", "name": "IMG_GLYPH_MW_D2", "file": "images/glyphs/MW_D2.png" },
-        { "type": "bitmap", "name": "IMG_GLYPH_MW_D3", "file": "images/glyphs/MW_D3.png" },
-        { "type": "bitmap", "name": "IMG_GLYPH_MW_D4", "file": "images/glyphs/MW_D4.png" },
-        { "type": "bitmap", "name": "IMG_GLYPH_MW_D5", "file": "images/glyphs/MW_D5.png" },
-        { "type": "bitmap", "name": "IMG_GLYPH_MW_D6", "file": "images/glyphs/MW_D6.png" },
-        { "type": "bitmap", "name": "IMG_GLYPH_MW_D7", "file": "images/glyphs/MW_D7.png" },
-        { "type": "bitmap", "name": "IMG_GLYPH_MW_D8", "file": "images/glyphs/MW_D8.png" },
-        { "type": "bitmap", "name": "IMG_GLYPH_MW_D9", "file": "images/glyphs/MW_D9.png" },
-        { "type": "bitmap", "name": "IMG_GLYPH_MW_DOT", "file": "images/glyphs/MW_DOT.png" },
-        { "type": "bitmap", "name": "IMG_GLYPH_MW_I", "file": "images/glyphs/MW_I.png" },
-        { "type": "bitmap", "name": "IMG_GLYPH_MW_M", "file": "images/glyphs/MW_M.png" },
-        { "type": "bitmap", "name": "IMG_GLYPH_MW_K", "file": "images/glyphs/MW_K.png" },
-        { "type": "bitmap", "name": "IMG_GLYPH_SY_D0", "file": "images/glyphs/SY_D0.png" },
-        { "type": "bitmap", "name": "IMG_GLYPH_SY_D1", "file": "images/glyphs/SY_D1.png" },
-        { "type": "bitmap", "name": "IMG_GLYPH_SY_D2", "file": "images/glyphs/SY_D2.png" },
-        { "type": "bitmap", "name": "IMG_GLYPH_SY_D3", "file": "images/glyphs/SY_D3.png" },
-        { "type": "bitmap", "name": "IMG_GLYPH_SY_D4", "file": "images/glyphs/SY_D4.png" },
-        { "type": "bitmap", "name": "IMG_GLYPH_SY_D5", "file": "images/glyphs/SY_D5.png" },
-        { "type": "bitmap", "name": "IMG_GLYPH_SY_D6", "file": "images/glyphs/SY_D6.png" },
-        { "type": "bitmap", "name": "IMG_GLYPH_SY_D7", "file": "images/glyphs/SY_D7.png" },
-        { "type": "bitmap", "name": "IMG_GLYPH_SY_D8", "file": "images/glyphs/SY_D8.png" },
-        { "type": "bitmap", "name": "IMG_GLYPH_SY_D9", "file": "images/glyphs/SY_D9.png" },
-        { "type": "bitmap", "name": "IMG_GLYPH_SY_DASH", "file": "images/glyphs/SY_DASH.png" },
-        { "type": "bitmap", "name": "IMG_GLYPH_SY_DEG", "file": "images/glyphs/SY_DEG.png" },
-        { "type": "bitmap", "name": "IMG_GLYPH_SY_F", "file": "images/glyphs/SY_F.png" },
-        { "type": "bitmap", "name": "IMG_GLYPH_SY_C", "file": "images/glyphs/SY_C.png" }
+        {
+          "type": "bitmap",
+          "name": "IMG_W_CLEAR",
+          "file": "images/Weather/clear.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_W_CLEAR",
+          "file": "images/small/Weather/clear.png",
+          "targetPlatforms": [
+            "basalt"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_W_CLEAR",
+          "file": "images/small_bw/Weather/clear.png",
+          "targetPlatforms": [
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_W_CLEAR_NIGHT",
+          "file": "images/Weather/clearnight.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_W_CLEAR_NIGHT",
+          "file": "images/small/Weather/clearnight.png",
+          "targetPlatforms": [
+            "basalt"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_W_CLEAR_NIGHT",
+          "file": "images/small_bw/Weather/clearnight.png",
+          "targetPlatforms": [
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_W_PARTLY_CLOUDY",
+          "file": "images/Weather/partlycloudy.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_W_PARTLY_CLOUDY",
+          "file": "images/small/Weather/partlycloudy.png",
+          "targetPlatforms": [
+            "basalt"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_W_PARTLY_CLOUDY",
+          "file": "images/small_bw/Weather/partlycloudy.png",
+          "targetPlatforms": [
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_W_PARTLY_CLOUDY_NIGHT",
+          "file": "images/Weather/partlycloudynight.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_W_PARTLY_CLOUDY_NIGHT",
+          "file": "images/small/Weather/partlycloudynight.png",
+          "targetPlatforms": [
+            "basalt"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_W_PARTLY_CLOUDY_NIGHT",
+          "file": "images/small_bw/Weather/partlycloudynight.png",
+          "targetPlatforms": [
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_W_SCATTERED",
+          "file": "images/Weather/scatteredclouds.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_W_SCATTERED",
+          "file": "images/small/Weather/scatteredclouds.png",
+          "targetPlatforms": [
+            "basalt"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_W_SCATTERED",
+          "file": "images/small_bw/Weather/scatteredclouds.png",
+          "targetPlatforms": [
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_W_CLOUDY_NIGHT",
+          "file": "images/Weather/cloudynight.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_W_CLOUDY_NIGHT",
+          "file": "images/small/Weather/cloudynight.png",
+          "targetPlatforms": [
+            "basalt"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_W_CLOUDY_NIGHT",
+          "file": "images/small_bw/Weather/cloudynight.png",
+          "targetPlatforms": [
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_W_RAIN",
+          "file": "images/Weather/rain02.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_W_RAIN",
+          "file": "images/small/Weather/rain02.png",
+          "targetPlatforms": [
+            "basalt"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_W_RAIN",
+          "file": "images/small_bw/Weather/rain02.png",
+          "targetPlatforms": [
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_W_RAIN_HEAVY",
+          "file": "images/Weather/rain03.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_W_RAIN_HEAVY",
+          "file": "images/small/Weather/rain03.png",
+          "targetPlatforms": [
+            "basalt"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_W_RAIN_HEAVY",
+          "file": "images/small_bw/Weather/rain03.png",
+          "targetPlatforms": [
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_W_STORM",
+          "file": "images/Weather/thunderstorms01.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_W_STORM",
+          "file": "images/small/Weather/thunderstorms01.png",
+          "targetPlatforms": [
+            "basalt"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_W_STORM",
+          "file": "images/small_bw/Weather/thunderstorms01.png",
+          "targetPlatforms": [
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_W_FOG",
+          "file": "images/Weather/fog.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_W_FOG",
+          "file": "images/small/Weather/fog.png",
+          "targetPlatforms": [
+            "basalt"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_W_FOG",
+          "file": "images/small_bw/Weather/fog.png",
+          "targetPlatforms": [
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_W_ICE",
+          "file": "images/Weather/ice.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_W_ICE",
+          "file": "images/small/Weather/ice.png",
+          "targetPlatforms": [
+            "basalt"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_W_ICE",
+          "file": "images/small_bw/Weather/ice.png",
+          "targetPlatforms": [
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_W_SNOW",
+          "file": "images/Weather/snow.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_W_SNOW",
+          "file": "images/small/Weather/snow.png",
+          "targetPlatforms": [
+            "basalt"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_W_SNOW",
+          "file": "images/small_bw/Weather/snow.png",
+          "targetPlatforms": [
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_W_UNKNOWN",
+          "file": "images/Weather/unknown.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_W_UNKNOWN",
+          "file": "images/small/Weather/unknown.png",
+          "targetPlatforms": [
+            "basalt"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_W_UNKNOWN",
+          "file": "images/small_bw/Weather/unknown.png",
+          "targetPlatforms": [
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_W_WAIT",
+          "file": "images/Weather/wait.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_W_WAIT",
+          "file": "images/small/Weather/wait.png",
+          "targetPlatforms": [
+            "basalt"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_W_WAIT",
+          "file": "images/small_bw/Weather/wait.png",
+          "targetPlatforms": [
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_STEPS",
+          "file": "images/Tracking/stat_steps.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_STEPS",
+          "file": "images/small/Tracking/stat_steps.png",
+          "targetPlatforms": [
+            "basalt",
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_DIST",
+          "file": "images/Tracking/stat_dist.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_DIST",
+          "file": "images/small/Tracking/stat_dist.png",
+          "targetPlatforms": [
+            "basalt",
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_AM",
+          "file": "images/Tracking/stat_am.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_AM",
+          "file": "images/small/Tracking/stat_am.png",
+          "targetPlatforms": [
+            "basalt",
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_CALS",
+          "file": "images/Tracking/stat_cals.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_CALS",
+          "file": "images/small/Tracking/stat_cals.png",
+          "targetPlatforms": [
+            "basalt",
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_BW_COLON",
+          "file": "images/glyphs/BW_COLON.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_BW_COLON",
+          "file": "images/small/glyphs/BW_COLON.png",
+          "targetPlatforms": [
+            "basalt",
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_BW_D0",
+          "file": "images/glyphs/BW_D0.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_BW_D0",
+          "file": "images/small/glyphs/BW_D0.png",
+          "targetPlatforms": [
+            "basalt",
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_BW_D1",
+          "file": "images/glyphs/BW_D1.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_BW_D1",
+          "file": "images/small/glyphs/BW_D1.png",
+          "targetPlatforms": [
+            "basalt",
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_BW_D2",
+          "file": "images/glyphs/BW_D2.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_BW_D2",
+          "file": "images/small/glyphs/BW_D2.png",
+          "targetPlatforms": [
+            "basalt",
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_BW_D3",
+          "file": "images/glyphs/BW_D3.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_BW_D3",
+          "file": "images/small/glyphs/BW_D3.png",
+          "targetPlatforms": [
+            "basalt",
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_BW_D4",
+          "file": "images/glyphs/BW_D4.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_BW_D4",
+          "file": "images/small/glyphs/BW_D4.png",
+          "targetPlatforms": [
+            "basalt",
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_BW_D5",
+          "file": "images/glyphs/BW_D5.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_BW_D5",
+          "file": "images/small/glyphs/BW_D5.png",
+          "targetPlatforms": [
+            "basalt",
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_BW_D6",
+          "file": "images/glyphs/BW_D6.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_BW_D6",
+          "file": "images/small/glyphs/BW_D6.png",
+          "targetPlatforms": [
+            "basalt",
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_BW_D7",
+          "file": "images/glyphs/BW_D7.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_BW_D7",
+          "file": "images/small/glyphs/BW_D7.png",
+          "targetPlatforms": [
+            "basalt",
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_BW_D8",
+          "file": "images/glyphs/BW_D8.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_BW_D8",
+          "file": "images/small/glyphs/BW_D8.png",
+          "targetPlatforms": [
+            "basalt",
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_BW_D9",
+          "file": "images/glyphs/BW_D9.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_BW_D9",
+          "file": "images/small/glyphs/BW_D9.png",
+          "targetPlatforms": [
+            "basalt",
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MG_D0",
+          "file": "images/glyphs/MG_D0.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MG_D0",
+          "file": "images/small/glyphs/MG_D0.png",
+          "targetPlatforms": [
+            "basalt"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MG_D0",
+          "file": "images/small_bw/glyphs/MG_D0.png",
+          "targetPlatforms": [
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MG_D1",
+          "file": "images/glyphs/MG_D1.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MG_D1",
+          "file": "images/small/glyphs/MG_D1.png",
+          "targetPlatforms": [
+            "basalt"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MG_D1",
+          "file": "images/small_bw/glyphs/MG_D1.png",
+          "targetPlatforms": [
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MG_D2",
+          "file": "images/glyphs/MG_D2.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MG_D2",
+          "file": "images/small/glyphs/MG_D2.png",
+          "targetPlatforms": [
+            "basalt"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MG_D2",
+          "file": "images/small_bw/glyphs/MG_D2.png",
+          "targetPlatforms": [
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MG_D3",
+          "file": "images/glyphs/MG_D3.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MG_D3",
+          "file": "images/small/glyphs/MG_D3.png",
+          "targetPlatforms": [
+            "basalt"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MG_D3",
+          "file": "images/small_bw/glyphs/MG_D3.png",
+          "targetPlatforms": [
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MG_D4",
+          "file": "images/glyphs/MG_D4.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MG_D4",
+          "file": "images/small/glyphs/MG_D4.png",
+          "targetPlatforms": [
+            "basalt"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MG_D4",
+          "file": "images/small_bw/glyphs/MG_D4.png",
+          "targetPlatforms": [
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MG_D5",
+          "file": "images/glyphs/MG_D5.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MG_D5",
+          "file": "images/small/glyphs/MG_D5.png",
+          "targetPlatforms": [
+            "basalt"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MG_D5",
+          "file": "images/small_bw/glyphs/MG_D5.png",
+          "targetPlatforms": [
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MG_D6",
+          "file": "images/glyphs/MG_D6.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MG_D6",
+          "file": "images/small/glyphs/MG_D6.png",
+          "targetPlatforms": [
+            "basalt"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MG_D6",
+          "file": "images/small_bw/glyphs/MG_D6.png",
+          "targetPlatforms": [
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MG_D7",
+          "file": "images/glyphs/MG_D7.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MG_D7",
+          "file": "images/small/glyphs/MG_D7.png",
+          "targetPlatforms": [
+            "basalt"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MG_D7",
+          "file": "images/small_bw/glyphs/MG_D7.png",
+          "targetPlatforms": [
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MG_D8",
+          "file": "images/glyphs/MG_D8.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MG_D8",
+          "file": "images/small/glyphs/MG_D8.png",
+          "targetPlatforms": [
+            "basalt"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MG_D8",
+          "file": "images/small_bw/glyphs/MG_D8.png",
+          "targetPlatforms": [
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MG_D9",
+          "file": "images/glyphs/MG_D9.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MG_D9",
+          "file": "images/small/glyphs/MG_D9.png",
+          "targetPlatforms": [
+            "basalt"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MG_D9",
+          "file": "images/small_bw/glyphs/MG_D9.png",
+          "targetPlatforms": [
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MG_SLASH",
+          "file": "images/glyphs/MG_SLASH.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MG_SLASH",
+          "file": "images/small/glyphs/MG_SLASH.png",
+          "targetPlatforms": [
+            "basalt"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MG_SLASH",
+          "file": "images/small_bw/glyphs/MG_SLASH.png",
+          "targetPlatforms": [
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MR_A",
+          "file": "images/glyphs/MR_A.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MR_A",
+          "file": "images/small/glyphs/MR_A.png",
+          "targetPlatforms": [
+            "basalt"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MR_A",
+          "file": "images/small_bw/glyphs/MR_A.png",
+          "targetPlatforms": [
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MR_D",
+          "file": "images/glyphs/MR_D.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MR_D",
+          "file": "images/small/glyphs/MR_D.png",
+          "targetPlatforms": [
+            "basalt"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MR_D",
+          "file": "images/small_bw/glyphs/MR_D.png",
+          "targetPlatforms": [
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MR_E",
+          "file": "images/glyphs/MR_E.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MR_E",
+          "file": "images/small/glyphs/MR_E.png",
+          "targetPlatforms": [
+            "basalt"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MR_E",
+          "file": "images/small_bw/glyphs/MR_E.png",
+          "targetPlatforms": [
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MR_F",
+          "file": "images/glyphs/MR_F.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MR_F",
+          "file": "images/small/glyphs/MR_F.png",
+          "targetPlatforms": [
+            "basalt"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MR_F",
+          "file": "images/small_bw/glyphs/MR_F.png",
+          "targetPlatforms": [
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MR_H",
+          "file": "images/glyphs/MR_H.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MR_H",
+          "file": "images/small/glyphs/MR_H.png",
+          "targetPlatforms": [
+            "basalt"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MR_H",
+          "file": "images/small_bw/glyphs/MR_H.png",
+          "targetPlatforms": [
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MR_I",
+          "file": "images/glyphs/MR_I.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MR_I",
+          "file": "images/small/glyphs/MR_I.png",
+          "targetPlatforms": [
+            "basalt"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MR_I",
+          "file": "images/small_bw/glyphs/MR_I.png",
+          "targetPlatforms": [
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MR_M",
+          "file": "images/glyphs/MR_M.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MR_M",
+          "file": "images/small/glyphs/MR_M.png",
+          "targetPlatforms": [
+            "basalt"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MR_M",
+          "file": "images/small_bw/glyphs/MR_M.png",
+          "targetPlatforms": [
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MR_N",
+          "file": "images/glyphs/MR_N.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MR_N",
+          "file": "images/small/glyphs/MR_N.png",
+          "targetPlatforms": [
+            "basalt"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MR_N",
+          "file": "images/small_bw/glyphs/MR_N.png",
+          "targetPlatforms": [
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MR_O",
+          "file": "images/glyphs/MR_O.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MR_O",
+          "file": "images/small/glyphs/MR_O.png",
+          "targetPlatforms": [
+            "basalt"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MR_O",
+          "file": "images/small_bw/glyphs/MR_O.png",
+          "targetPlatforms": [
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MR_R",
+          "file": "images/glyphs/MR_R.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MR_R",
+          "file": "images/small/glyphs/MR_R.png",
+          "targetPlatforms": [
+            "basalt"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MR_R",
+          "file": "images/small_bw/glyphs/MR_R.png",
+          "targetPlatforms": [
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MR_S",
+          "file": "images/glyphs/MR_S.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MR_S",
+          "file": "images/small/glyphs/MR_S.png",
+          "targetPlatforms": [
+            "basalt"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MR_S",
+          "file": "images/small_bw/glyphs/MR_S.png",
+          "targetPlatforms": [
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MR_T",
+          "file": "images/glyphs/MR_T.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MR_T",
+          "file": "images/small/glyphs/MR_T.png",
+          "targetPlatforms": [
+            "basalt"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MR_T",
+          "file": "images/small_bw/glyphs/MR_T.png",
+          "targetPlatforms": [
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MR_U",
+          "file": "images/glyphs/MR_U.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MR_U",
+          "file": "images/small/glyphs/MR_U.png",
+          "targetPlatforms": [
+            "basalt"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MR_U",
+          "file": "images/small_bw/glyphs/MR_U.png",
+          "targetPlatforms": [
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MR_W",
+          "file": "images/glyphs/MR_W.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MR_W",
+          "file": "images/small/glyphs/MR_W.png",
+          "targetPlatforms": [
+            "basalt"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MR_W",
+          "file": "images/small_bw/glyphs/MR_W.png",
+          "targetPlatforms": [
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MW_COLON",
+          "file": "images/glyphs/MW_COLON.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MW_COLON",
+          "file": "images/small/glyphs/MW_COLON.png",
+          "targetPlatforms": [
+            "basalt",
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MW_D0",
+          "file": "images/glyphs/MW_D0.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MW_D0",
+          "file": "images/small/glyphs/MW_D0.png",
+          "targetPlatforms": [
+            "basalt",
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MW_D1",
+          "file": "images/glyphs/MW_D1.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MW_D1",
+          "file": "images/small/glyphs/MW_D1.png",
+          "targetPlatforms": [
+            "basalt",
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MW_D2",
+          "file": "images/glyphs/MW_D2.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MW_D2",
+          "file": "images/small/glyphs/MW_D2.png",
+          "targetPlatforms": [
+            "basalt",
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MW_D3",
+          "file": "images/glyphs/MW_D3.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MW_D3",
+          "file": "images/small/glyphs/MW_D3.png",
+          "targetPlatforms": [
+            "basalt",
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MW_D4",
+          "file": "images/glyphs/MW_D4.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MW_D4",
+          "file": "images/small/glyphs/MW_D4.png",
+          "targetPlatforms": [
+            "basalt",
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MW_D5",
+          "file": "images/glyphs/MW_D5.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MW_D5",
+          "file": "images/small/glyphs/MW_D5.png",
+          "targetPlatforms": [
+            "basalt",
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MW_D6",
+          "file": "images/glyphs/MW_D6.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MW_D6",
+          "file": "images/small/glyphs/MW_D6.png",
+          "targetPlatforms": [
+            "basalt",
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MW_D7",
+          "file": "images/glyphs/MW_D7.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MW_D7",
+          "file": "images/small/glyphs/MW_D7.png",
+          "targetPlatforms": [
+            "basalt",
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MW_D8",
+          "file": "images/glyphs/MW_D8.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MW_D8",
+          "file": "images/small/glyphs/MW_D8.png",
+          "targetPlatforms": [
+            "basalt",
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MW_D9",
+          "file": "images/glyphs/MW_D9.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MW_D9",
+          "file": "images/small/glyphs/MW_D9.png",
+          "targetPlatforms": [
+            "basalt",
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MW_DOT",
+          "file": "images/glyphs/MW_DOT.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MW_DOT",
+          "file": "images/small/glyphs/MW_DOT.png",
+          "targetPlatforms": [
+            "basalt",
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MW_I",
+          "file": "images/glyphs/MW_I.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MW_I",
+          "file": "images/small/glyphs/MW_I.png",
+          "targetPlatforms": [
+            "basalt",
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MW_M",
+          "file": "images/glyphs/MW_M.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MW_M",
+          "file": "images/small/glyphs/MW_M.png",
+          "targetPlatforms": [
+            "basalt",
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MW_K",
+          "file": "images/glyphs/MW_K.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_MW_K",
+          "file": "images/small/glyphs/MW_K.png",
+          "targetPlatforms": [
+            "basalt",
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_SY_D0",
+          "file": "images/glyphs/SY_D0.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_SY_D0",
+          "file": "images/small/glyphs/SY_D0.png",
+          "targetPlatforms": [
+            "basalt"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_SY_D0",
+          "file": "images/small_bw/glyphs/SY_D0.png",
+          "targetPlatforms": [
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_SY_D1",
+          "file": "images/glyphs/SY_D1.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_SY_D1",
+          "file": "images/small/glyphs/SY_D1.png",
+          "targetPlatforms": [
+            "basalt"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_SY_D1",
+          "file": "images/small_bw/glyphs/SY_D1.png",
+          "targetPlatforms": [
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_SY_D2",
+          "file": "images/glyphs/SY_D2.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_SY_D2",
+          "file": "images/small/glyphs/SY_D2.png",
+          "targetPlatforms": [
+            "basalt"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_SY_D2",
+          "file": "images/small_bw/glyphs/SY_D2.png",
+          "targetPlatforms": [
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_SY_D3",
+          "file": "images/glyphs/SY_D3.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_SY_D3",
+          "file": "images/small/glyphs/SY_D3.png",
+          "targetPlatforms": [
+            "basalt"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_SY_D3",
+          "file": "images/small_bw/glyphs/SY_D3.png",
+          "targetPlatforms": [
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_SY_D4",
+          "file": "images/glyphs/SY_D4.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_SY_D4",
+          "file": "images/small/glyphs/SY_D4.png",
+          "targetPlatforms": [
+            "basalt"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_SY_D4",
+          "file": "images/small_bw/glyphs/SY_D4.png",
+          "targetPlatforms": [
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_SY_D5",
+          "file": "images/glyphs/SY_D5.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_SY_D5",
+          "file": "images/small/glyphs/SY_D5.png",
+          "targetPlatforms": [
+            "basalt"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_SY_D5",
+          "file": "images/small_bw/glyphs/SY_D5.png",
+          "targetPlatforms": [
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_SY_D6",
+          "file": "images/glyphs/SY_D6.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_SY_D6",
+          "file": "images/small/glyphs/SY_D6.png",
+          "targetPlatforms": [
+            "basalt"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_SY_D6",
+          "file": "images/small_bw/glyphs/SY_D6.png",
+          "targetPlatforms": [
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_SY_D7",
+          "file": "images/glyphs/SY_D7.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_SY_D7",
+          "file": "images/small/glyphs/SY_D7.png",
+          "targetPlatforms": [
+            "basalt"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_SY_D7",
+          "file": "images/small_bw/glyphs/SY_D7.png",
+          "targetPlatforms": [
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_SY_D8",
+          "file": "images/glyphs/SY_D8.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_SY_D8",
+          "file": "images/small/glyphs/SY_D8.png",
+          "targetPlatforms": [
+            "basalt"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_SY_D8",
+          "file": "images/small_bw/glyphs/SY_D8.png",
+          "targetPlatforms": [
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_SY_D9",
+          "file": "images/glyphs/SY_D9.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_SY_D9",
+          "file": "images/small/glyphs/SY_D9.png",
+          "targetPlatforms": [
+            "basalt"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_SY_D9",
+          "file": "images/small_bw/glyphs/SY_D9.png",
+          "targetPlatforms": [
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_SY_DASH",
+          "file": "images/glyphs/SY_DASH.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_SY_DASH",
+          "file": "images/small/glyphs/SY_DASH.png",
+          "targetPlatforms": [
+            "basalt"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_SY_DASH",
+          "file": "images/small_bw/glyphs/SY_DASH.png",
+          "targetPlatforms": [
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_SY_DEG",
+          "file": "images/glyphs/SY_DEG.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_SY_DEG",
+          "file": "images/small/glyphs/SY_DEG.png",
+          "targetPlatforms": [
+            "basalt"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_SY_DEG",
+          "file": "images/small_bw/glyphs/SY_DEG.png",
+          "targetPlatforms": [
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_SY_F",
+          "file": "images/glyphs/SY_F.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_SY_F",
+          "file": "images/small/glyphs/SY_F.png",
+          "targetPlatforms": [
+            "basalt"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_SY_F",
+          "file": "images/small_bw/glyphs/SY_F.png",
+          "targetPlatforms": [
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_SY_C",
+          "file": "images/glyphs/SY_C.png",
+          "targetPlatforms": [
+            "emery"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_SY_C",
+          "file": "images/small/glyphs/SY_C.png",
+          "targetPlatforms": [
+            "basalt"
+          ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_GLYPH_SY_C",
+          "file": "images/small_bw/glyphs/SY_C.png",
+          "targetPlatforms": [
+            "diorite",
+            "flint",
+            "aplite"
+          ]
+        }
       ]
     }
   }
