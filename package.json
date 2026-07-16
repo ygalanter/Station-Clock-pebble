@@ -1,7 +1,7 @@
 {
   "name": "station-clock-pebble",
   "author": "Comfortably Numb",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "keywords": [
     "pebble-app"
   ],
@@ -1987,6 +1987,12 @@
             "flint",
             "aplite"
           ]
+        },
+        {
+          "type": "bitmap",
+          "name": "IMG_MENU_ICON",
+          "file": "images/menu_icon.png",
+          "menuIcon": true
         }
       ]
     }
